@@ -23,14 +23,21 @@
 ** Yum yum!
 
 * Process
+
+** Links
+
+- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][PDF Ready for printing on 8"x14" paper in landscape mode, duplex, *short edge* flip]]
+- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/onscreen.pdf][PDF for onscreen viewing]]
+- [[https://github.com/sachac/book-lets-make-a-smoothie][Code and drawings on Github]]
+
 ** Prerequisites
 
 - ImageMagick
-- Tetex-live
-- Beamer
-- Org Mode and Emacs (optional)
+- Texlive (probably)
+- latex-beamer
+- Org Mode and Emacs
 
-** Set up Org Mode export to Beamer (optional)
+** Set up Org Mode export to Beamer
 
 #+begin_src emacs-lisp
 (eval-after-load "ox-latex"
@@ -231,7 +238,7 @@ A little bit of manipulation so that the last page is in the right place:
 
 ** Create thumbnails of spreads
 
-#+begin_src emacs-lisp :var width=200 :var shadow=10 :results list
+#+begin_src emacs-lisp :var width=200 :var shadow=10 :results silent
     (cl-loop
      for i from 0 to (1- (/ pages 2)) do 
      (shell-command
@@ -245,12 +252,11 @@ A little bit of manipulation so that the last page is in the right place:
                "+swap -compose src-over -composite "
                "thumbnails/spread%d.png")
        i i width shadow shadow i)))
-
 #+end_src
 
 ** Ideas for next steps
 
-- Thumbnails for easy previews
+- Better thumbnails for easy previews
 - PDF for online reading
 - More layout possibilities (photos, verses, etc.)
 - Smaller books:

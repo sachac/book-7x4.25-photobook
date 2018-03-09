@@ -1,0 +1,258 @@
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc author:nil date:nil
+#+OPTIONS: H:1
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [20pt]
+#+BEAMER_FRAME_LEVEL: 1
+#+LATEX_HEADER: \input{header.tex}
+#+PROPERTY: header-args :var pages=12
+
+* Story
+
+** 
+** 
+** 
+** It's time to make a smoothie!
+** I pour blueberries into the blender.
+** Mama adds hemp seeds.
+** I add spinach.
+** Mama blends it all with some water.
+** I peel and add a banana.
+** I add some yogurt. 
+** Mama blends it again.
+** Yum yum!
+
+* Process
+** Prerequisites
+
+- ImageMagick
+- Tetex-live
+- Beamer
+- Org Mode and Emacs (optional)
+
+** Set up Org Mode export to Beamer (optional)
+
+#+begin_src emacs-lisp
+(eval-after-load "ox-latex"
+  ;; update the list of LaTeX classes and associated header (encoding, etc.)
+  ;; and structure
+  '(add-to-list 'org-latex-classes
+                `("beamer"
+                  ,(concat "\\documentclass[presentation]{beamer}\n"
+                           "[DEFAULT-PACKAGES]"
+                           "[PACKAGES]"
+                           "[EXTRA]\n")
+                  ("\\section{%s}" . "\\section*{%s}")
+                  ("\\subsection{%s}" . "\\subsection*{%s}")
+                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+#+end_src
+
+** Set up image directories
+
+#+begin_src sh
+mkdir text-pages blank-spreads drawn drawn-pages
+#+end_src
+
+#+RESULTS:
+
+| text-pages    | Will contain one image per page of just the plain text.                         |
+| blank-spreads | Will contain text spreads ready for drawing                                     |
+| drawn         | Export one image per spread (without the text layers) from your drawing program |
+| drawn-pages   | Will contain one image per page combining text and drawing                      |
+
+** Tweak the header.tex
+
+This file gets included in the LaTeX file for the children's book.
+Tweak it to change the appearance. In this example, I use black serif
+text at the bottom of the page.
+
+#+begin_src latex :tangle header.tex
+\geometry{paperwidth=7in,paperheight=8.5in,left=0.5in,top=0.5in,right=0.5in,bottom=0.5in}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=black,bg=white}
+\usefonttheme{serif}
+\setbeamertemplate{frametitle}
+{
+  \begin{center}
+  \vspace{0.7\textheight}                    
+  \noindent
+  \insertframetitle
+  \end{center}
+}
+\usepackage[noframe]{showframe}
+\renewcommand{\maketitle}{}
+#+end_src
+
+** Write the story
+
+I used Org Mode to make it easy to write the story.
+
+Some considerations:
+
+- Because we're printing this as a saddle-stitched booklet, the number
+  of lines should be a multiple of four. Sixteen is probably a good
+  maximum.
+- The first heading is actually for the last page.
+- The second heading is for the cover page.
+- The third heading is for the first inner page, the fourth heading is
+  for the second inner page, and so on.
+
+#+INCLUDE: "index.org" src org :lines "1-24"
+
+** Make the tex, PDF, page PNGs, and spread PNGs
+
+1. Go to the subtree for the story and use =M-x org-export-dispatch=
+   (=C-c C-e=) with the subtree option (=C-s=) to export it as a
+   Beamer file (option =l b=).
+
+2. Use =pdflatex= to convert the .tex to PDF.
+
+   #+begin_src sh :results silent
+   pdflatex index.tex
+   #+end_src
+
+3. Create one PNG per text page with:
+
+   #+begin_src sh 
+   convert -density 300 index.pdf -quality 100 text-pages/page%02d.png
+   #+end_src
+
+   #+RESULTS:
+
+4. Create spreads to draw on with:
+
+   #+begin_src sh
+   montage text-pages/page*.png -tile 2x1 -mode Concatenate blank-spreads/spread%d.png
+   #+end_src
+
+   #+RESULTS:
+
+5. Optionally, create a layered PSD with:
+
+   #+begin_src sh
+   convert blank-spreads/spread*.png \( -clone 1,0 -background white -flatten -alpha off \) -reverse spreads-for-drawing.psd
+   #+end_src
+
+   #+RESULTS:
+
+** Draw
+
+I imported the PNG layers into MediBang Paint on a Samsung Note 8
+Android phone, and then:
+
+- imported photos
+- traced them
+- painted and shaded them
+- hid the text layers
+- exported one PNG per spread to QuickPic, renamed them, and uploaded
+  them to Dropbox, because I couldn't figure out how to export to
+  Dropbox directly
+
+Layer folders were handy for organizing spread-related images. I
+couldn't seem to move all of the layers in a layer folder together on
+Android, but the iPad was able to do so. If I didn't have the iPad
+handy, I combined the layers by exporting a PNG and then importeing it
+back into MediBang Paint.
+
+This was a decent setup that allowed me to draw and paint even when I
+was in bed nursing A- and waiting for her to fall asleep. I held the
+phone with one hand and rotated the canvas as needed so that it was
+easier for me to draw lines with my right. Because of the awkward
+position and the small screen size, the lines are not as smooth as I
+might like, but the important thing is that they're there. Whee! =)
+
+It turns out to be possible to use the free MediBang Pro drawing
+program under Wine on Linux to import the PSD and save it to the
+cloud. I was also sometimes able to switch to drawing with iPad Pro
+with Pencil, but it was harder to find time to do that because that
+usually made A- want to draw too.
+
+Anyway, after I drew and exported the PNGs, the next step was to...
+
+** Convert the drawn spreads back to pages and combine them with the text
+
+Here's some code that combines the drawing and the text. Keeping the
+drawing and the text separate until this stage (instead of exporting
+the PNGs with the text) makes it easier to change the text later by
+recreating the text PNGs and running this step.
+
+#+begin_src emacs-lisp 
+  (defun my/combine-spread-drawing-and-text (page num-pages)
+    (let ((gravity (if (= (% page 2) 1) "West" "East"))
+          (spread (/ (% page num-pages) 2)))
+      (shell-command
+        (format 
+         (concat "convert \\( "
+                 "drawn/spread%d.png -gravity %s "
+                 "-chop 50%%x0 +repage \\) "
+                 "text-pages/page%02d.png -compose darken "
+                 "-composite drawn-pages/page%02d.png")
+         spread gravity page page))))
+
+  (cl-loop for i from 0 to (1- pages) do
+           (my/combine-spread-drawing-and-text i pages))
+#+end_src
+
+** Create print spreads for saddle-stitching
+
+This code pairs up the drawn pages into a PDF that can be printed
+duplex. Make sure to choose the option to flip along the *short edge.*
+I hard-coded the page orders for 4-, 8-, 12-, and 16-page booklets.
+
+#+begin_src emacs-lisp 
+  (let* ((page-order
+          '((0 1 2 3)   ; hard-coded page sequences
+            (0 1 2 7 6 3 4 5)
+            (0 1 2 11 10 3 4 9 8 5 6 7)
+            (0 1 2 15 14 3 4 13 12 5 6 11 10 7 8 9)))
+         (sequence
+          (mapconcat (lambda (d) (format "drawn-pages/page%02d.png" d))
+                     (elt page-order (1- (/ pages 4))) " ")))
+    (shell-command
+     (format
+      "montage %s -tile 2x1 -mode Concatenate print-duplex-short-edge-flip.pdf"
+      sequence)))
+#+end_src
+
+** Print and bind
+
+After printing and folding the book, I used tape to make the book hold together. Tada!
+
+** Create on-screen PDF for reading
+
+A little bit of manipulation so that the last page is in the right place:
+
+#+begin_src emacs-lisp
+(shell-command
+  (format "convert %s onscreen.pdf" 
+    (mapconcat 'identity (cl-loop for i from 1 to pages 
+      collect (format "drawn-pages/page%02d.png" (% i pages))) " ")))
+#+end_src
+
+** Create thumbnails of spreads
+
+#+begin_src emacs-lisp :var width=200 :var shadow=10 :results list
+    (cl-loop
+     for i from 0 to (1- (/ pages 2)) do 
+     (shell-command
+      (format 
+       (concat "convert "
+               "\\( blank-spreads/spread%d.png "
+               "drawn/spread%d.png "
+               "-compose darken "
+               "-resize %dx -flatten \\) "
+               "\\( +clone -background black -shadow 50x1+%d+%d \\) "
+               "+swap -compose src-over -composite "
+               "thumbnails/spread%d.png")
+       i i width shadow shadow i)))
+
+#+end_src
+
+** Ideas for next steps
+
+- Thumbnails for easy previews
+- PDF for online reading
+- More layout possibilities (photos, verses, etc.)
+- Smaller books:
+  - crop marks on a full-page print, or
+  - the right imposition rules to print more pages on a sheet

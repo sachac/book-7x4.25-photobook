@@ -26,7 +26,7 @@
 
 ** Links
 
-- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][PDF Ready for printing on 8"x14" paper in landscape mode, duplex, *short edge* flip]]
+- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][PDF Ready for printing on 8.5"x14" paper in landscape mode, duplex, *short edge* flip]]
 - [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/onscreen.pdf][PDF for onscreen viewing]]
 - [[https://github.com/sachac/book-lets-make-a-smoothie][Code and drawings on Github]]
 

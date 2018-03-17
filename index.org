@@ -13,7 +13,7 @@ make an 8-page book that could be printed 4 pages to a 8.5"x14" sheet
 
 Sample with my own photos:
 
-[[out.jpg]]
+[[https://github.com/sachac/book-7x4.25-photobook/raw/master/out.jpg]]
 
 * Prerequisites
 
@@ -26,8 +26,6 @@ Sample with my own photos:
 
 - [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][Placeholder PDF Ready for printing on 8.5"x14" paper in landscape mode, duplex, *short edge* flip]]
 - [[https://github.com/sachac/book-7x4.25-photobook][Code on Github]]
-
-Here's a sample with 
 
 * Process
 
@@ -54,7 +52,7 @@ Then we generate the LaTeX code with some Emacs Lisp, like so:
 ,#+end_src
 #+end_src
 
-I'll put that in a subtree for easier exporting with =C-c C-e C-s l b= (=org-export-dispatch=, subtree, LaTeX, Beamer).
+I put that in a subtree for easier exporting with =C-c C-e C-s l b= (=org-export-dispatch=, subtree, LaTeX, Beamer).
 
 * Story
 
@@ -110,18 +108,15 @@ of the page. I also experimented with using a different font this time, which yo
 
 ** Create the PDF
 
-Use =pdflatex= to convert the .tex to PDF.
-
    #+begin_src sh :results silent
    pdflatex index.tex
    #+end_src
 
-** Create one PNG per page with
+** Create one PNG per page
 
    #+begin_src sh :results silent
    mkdir pages
    convert -density 300 index.pdf -quality 100 pages/page%d.png
-
    #+end_src
 
 ** Create the 4-up imposition

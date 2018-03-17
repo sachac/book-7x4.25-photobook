@@ -6,6 +6,15 @@
 #+BEAMER_FRAME_LEVEL: 1
 #+LATEX_HEADER: \input{header.tex}
 
+Here's another technique that makes a simple photo book. I wanted to
+make an 8-page book that could be printed 4 pages to a 8.5"x14" sheet
+(duplex, flip along the short edge), with a final page size of
+7"x4.25". 
+
+Sample with my own photos:
+
+[[out.jpg]]
+
 * Prerequisites
 
 - ImageMagick
@@ -15,17 +24,14 @@
 
 * Links
 
-- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][PDF Ready for printing on 8.5"x14" paper in landscape mode, duplex, *short edge* flip]]
-- [[https://github.com/sachac/book-lets-make-a-smoothie][Code on Github]]
+- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][Placeholder PDF Ready for printing on 8.5"x14" paper in landscape mode, duplex, *short edge* flip]]
+- [[https://github.com/sachac/book-7x4.25-photobook][Code on Github]]
+
+Here's a sample with 
 
 * Process
 
-Here's another technique that makes a simple photo book. I wanted to
-make an 8-page book that could be printed 4 pages to a 8.5"x14" sheet
-(duplex, flip along the short edge), with a final page size of
-7"x4.25" 
-
-We can define the labels and their captions in a table like this:
+We can define the labels and their captions in a named table like this:
 
 #+NAME: story
 | Let's Go for a Walk |                 |

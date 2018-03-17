@@ -1,0 +1,43 @@
+\geometry{paperwidth=7in,paperheight=4.25in,left=0.5in,right=0.5in}
+\beamertemplatenavigationsymbolsempty
+\usepackage{etoolbox}
+\usepackage[T1]{fontenc}
+\usepackage{Alegreya}
+\usefonttheme{serif}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=black,bg=white}
+%% \setbeamertemplate{frametitle}
+%% {
+%%   \begin{center}
+%%   \noindent
+%%   \insertframetitle
+%%   \end{center}
+%% }
+\newcommand{\graphicframe}[2] {
+   {
+   %% \if #1\empty 
+   %% \usebackgroundtemplate{}
+   %% \fi
+   \ifstrempty{#1}{
+   \begin{frame}[plain]
+     \begin{center}
+     \noindent
+     \textbf{\huge{#2}}
+     \end{center}
+   \end{frame}
+   }{
+   \begin{frame}[plain]
+      \begin{columns}
+      \begin{column}{0.48\textwidth}
+      \huge{#2}
+      \end{column}
+      \begin{column}{0.48\textwidth}
+      \includegraphics[height=\textheight,width=\textwidth,keepaspectratio=true]{#1}
+      \end{column}
+      \end{columns}
+   \end{frame}
+   }
+   }
+}
+\usepackage[noframe]{showframe}
+\renewcommand{\maketitle}{}

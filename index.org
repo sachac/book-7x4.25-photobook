@@ -24,7 +24,7 @@ Sample with my own photos:
 
 * Links
 
-- [[https://github.com/sachac/book-lets-make-a-smoothie/raw/master/print-duplex-short-edge-flip.pdf][Placeholder PDF Ready for printing on 8.5"x14" paper in landscape mode, duplex, *short edge* flip]]
+- [[https://github.com/sachac/book-7x4.25-photobook/raw/master/print.pdf][Placeholder PDF Ready for printing on 8.5"x14" paper in landscape mode, duplex, *short edge* flip]]
 - [[https://github.com/sachac/book-7x4.25-photobook][Code on Github]]
 
 * Process
